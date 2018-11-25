@@ -6,6 +6,7 @@
  * a life. The main method of LimitedRPS.cpp will perform
  * the actual games
  *
+ * V 1.0.0. Written by DeltaSierra4 (Vincent Yang) 11/24/2018
  */
 
 #include "Contestant.h"

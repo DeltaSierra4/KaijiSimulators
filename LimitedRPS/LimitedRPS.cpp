@@ -1,18 +1,3 @@
-
-#include "Contestant.h"
-#include <algorithm>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <string.h>
-#include <vector>
-
-#define DEFAULT_CONTESTANT_COUNT 300
-#define DEFAULT_TURN_LIMIT 0
-#define DEFAULT_REPEATERS 0
-
-using namespace std;
-
 /*
  * class LimitedRPS
  *
@@ -36,7 +21,23 @@ using namespace std;
  * If no optional arguments are given, the number of contestants is set to 300,
  * there are no repeaters, and the turn limit is set to 0 (i.e. unlimited turns
  * until there are no contestants remaining in the general pool).
+ *
+ * V 1.0.0. Written by DeltaSierra4 (Vincent Yang) 11/24/2018
  */
+
+#include "Contestant.h"
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <string.h>
+#include <vector>
+
+#define DEFAULT_CONTESTANT_COUNT 300
+#define DEFAULT_TURN_LIMIT 0
+#define DEFAULT_REPEATERS 0
+
+using namespace std;
 
 
 /*
