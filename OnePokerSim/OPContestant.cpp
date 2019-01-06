@@ -130,8 +130,45 @@ void OPContestant::setScore(int scenario, int choice, int changeScore)
   }
 }
 
+int OPContestant::getMaxIndex(int scenario, bool initialRaise)
+{
+  //Same with getScore(), all indices will have a one-off error
+  int* currentArray;
+  switch(scenario)
+  {
+    case 0 : currentArray = scoreA[this->seeCardValue(0) - 1][this->seeCardValue(1) - 1];
+             break;
+    case 1 : currentArray = scoreB[this->seeCardValue(0) - 1][this->seeCardValue(1) - 1];
+             break;
+    case 2 : currentArray = scoreC[this->seeCardValue(0) - 1][this->seeCardValue(1) - 1];
+             break;
+    default : cout << "Invalid case number detected." << endl;
+              return -1;
+  }
+
+  int maxInd;
+  if (initialRaise)
+  {
+    maxInd = 0;
+  }
+  else
+  {
+    maxInd = 2;
+  }
+  for (int ind = (maxInd+1) ; ind < 6 ; ind++)
+  {
+    if (currentArray[ind] > currentArray[maxInd])
+    {
+      maxInd = ind;
+    }
+  }
+  currentArray = NULL;
+  return maxInd;
+}
+
 void OPContestant::arrangeHand()
 {
+  PokerCards * temp;
   if (this->seeCardValue(0) != this->seeCardValue(1))
   {
     //Only perform the swap if the two card values are not the same.
@@ -139,7 +176,7 @@ void OPContestant::arrangeHand()
     {
       //Only swap the positions of both cards if the first card has a lower
       //value than the second card. This also applies only if both cards are not ace.
-      PokerCards * temp = this->hand[0];
+      temp = this->hand[0];
       this->hand[0] = this->hand[1];
       this->hand[1] = temp;
     }
@@ -147,11 +184,12 @@ void OPContestant::arrangeHand()
     {
       //The swap should also happen if the second card happens to be an ace,
       //regardless of the value of the first card, because ace is the highest value.
-      PokerCards * temp = this->hand[0];
+      temp = this->hand[0];
       this->hand[0] = this->hand[1];
       this->hand[1] = temp;
     }
   }
+  temp = NULL;
 }
 
 void OPContestant::resetHand(int lives=0)
@@ -188,13 +226,13 @@ void OPContestant::resetComplete()
   delete[] this->scoreC;
 }
 
-void OPContestant::combine(OPContestant * other, int newLifeCount)
+void OPContestant::combine(OPContestant *& other, int newLifeCount)
 {
   for (unsigned row = 0 ; row < PokerCards::KING ; row++)
   {
     for (unsigned col = 0 ; col < PokerCards::KING ; col++)
     {
-      for (unsigned ind = 0 ; ind < 2 ; ind++)
+      for (unsigned ind = 0 ; ind < 6 ; ind++)
       {
         this->scoreA[row][col][ind] += other->scoreA[row][col][ind];
         this->scoreB[row][col][ind] += other->scoreB[row][col][ind];

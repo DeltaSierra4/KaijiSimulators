@@ -83,6 +83,17 @@ class OPContestant
     void setScore(int scenario, int choice, int changeScore);
 
     /*
+     * Obtain the index with the max score in a given scenario.
+     * @param  scenario = 0 for score table A, 1 for table B, 2 for table C
+     * @param  initialRaise = true to consider folding, false otherwise.
+     * @return the index of the choice with the highest score.
+     *         e.g. return 0 for play 1st card and fold
+     *              return 3 for play 2nd card and check
+     *              return 4 for play 1st card and raise.
+     */
+    int getMaxIndex(int scenario, bool initialRaise);
+
+    /*
      * Deletes all unused PokerCard objects and sets life back to default.
      * @param  number of lives to reset to
      */
@@ -103,7 +114,7 @@ class OPContestant
      * @param  the life count of the resulting combined instance. Set to 0 to
      *         leave the life count unchanged.
      */
-    void combine(OPContestant * other, int newLifeCount);
+    void combine(OPContestant *& other, int newLifeCount);
 
     /*
      * DEBUG method! DELETE AFTER PROGRAM IS COMPLETE

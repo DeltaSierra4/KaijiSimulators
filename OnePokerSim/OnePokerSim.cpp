@@ -242,7 +242,17 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
   //cout << "player2 cond1: " << player2cond1 << ", cond2: " << player2cond2 << ", cond3: " << player2cond3 << endl; //DEBUG
 
   //Whoever wins claims one life from the opponent. Draws do not affect anything.
-  if (player1cond1 || player1cond2 || player1cond3 || player1cond4) //Player 1 wins
+  //For the switch cases of setScore() calls, punish the A.I. for losing lives
+  //with one exception: Iff the A.I. chose to fold correctly (i.e. choosing to
+  //fold when the opponent has a higher card), reward the A.I. even if folding
+  //causes loss of life.
+  //If any of player2cond1,2,3 is true and player 2 folded, it should still count
+  //as player 1 win and vice versa. In this case, it is considered an incorrect
+  //folding, and the player will be punished for the incorrect folding.
+  //Reckless pushing is also punished. When the A.I. raises with two down cards
+  //when the opponent has two up cards, the raise is suicidal. Hence, if the
+  //opponent had a better card yet the A.I. raised, the A.I. is punished.
+  if ((player1cond1 || player1cond2 || player1cond3 || player1cond4) && !player2cond4) //Player 1 wins
   {
     player1->setLife(player1->getLife() + player1Bet);
     player2->setLife(player2->getLife() - player2Bet);
@@ -251,8 +261,15 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       switch(player1Raise)
       {
         case 1: player1->setScore(0, player1Choice + 2, player1Bet); break;
-        case 2: player1->setScore(0, player1Choice + 4, player1Bet); break;
-        default: player1->setScore(0, player1Choice, player1Bet); break;
+        case 0: player1->setScore(0, player1Choice, player1Bet); break;
+      }
+      if (player2cond1 || player2cond2 || player2cond3)
+      {
+        player1->setScore(0, player1Choice + 4, -1 * player1Bet);
+      }
+      else
+      {
+        player1->setScore(0, player1Choice + 4, player1Bet);
       }
     }
     else if (updown[4]) //Player 2 at 1 up 1 down
@@ -260,8 +277,15 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       switch(player1Raise)
       {
         case 1: player1->setScore(1, player1Choice + 2, player1Bet); break;
-        case 2: player1->setScore(1, player1Choice + 4, player1Bet); break;
-        default: player1->setScore(1, player1Choice, player1Bet); break;
+        case 0: player1->setScore(1, player1Choice, player1Bet); break;
+      }
+      if (player2cond1 || player2cond2 || player2cond3)
+      {
+        player1->setScore(1, player1Choice + 4, -1 * player1Bet);
+      }
+      else
+      {
+        player1->setScore(1, player1Choice + 4, player1Bet);
       }
     }
     else if (updown[5]) //Player 2 at 2 down
@@ -269,8 +293,15 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       switch(player1Raise)
       {
         case 1: player1->setScore(2, player1Choice + 2, player1Bet); break;
-        case 2: player1->setScore(2, player1Choice + 4, player1Bet); break;
-        default: player1->setScore(2, player1Choice, player1Bet); break;
+        case 0: player1->setScore(2, player1Choice, player1Bet); break;
+      }
+      if (player2cond1 || player2cond2 || player2cond3)
+      {
+        player1->setScore(2, player1Choice + 4, -1 * player1Bet);
+      }
+      else
+      {
+        player1->setScore(2, player1Choice + 4, player1Bet);
       }
     }
     if (updown[0]) //Player 1 at 2 up
@@ -279,7 +310,14 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       {
         case 1: player2->setScore(0, player2Choice + 2, -1 * player2Bet); break;
         case 2: player2->setScore(0, player2Choice + 4, -1 * player2Bet); break;
-        default: player2->setScore(0, player2Choice, -1 * player2Bet); break;
+      }
+      if (player2cond1 || player2cond2 || player2cond3)
+      {
+        player2->setScore(0, player2Choice, -1 * player2Bet);
+      }
+      else
+      {
+        player2->setScore(0, player2Choice, player2Bet);
       }
     }
     else if (updown[1]) //Player 1 at 1 up 1 down
@@ -288,7 +326,14 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       {
         case 1: player2->setScore(1, player2Choice + 2, -1 * player2Bet); break;
         case 2: player2->setScore(1, player2Choice + 4, -1 * player2Bet); break;
-        default: player2->setScore(1, player2Choice, -1 * player2Bet); break;
+      }
+      if (player2cond1 || player2cond2 || player2cond3)
+      {
+        player2->setScore(1, player2Choice, -1 * player2Bet);
+      }
+      else
+      {
+        player2->setScore(1, player2Choice, player2Bet);
       }
     }
     else if (updown[2]) //Player 1 at 2 down
@@ -297,11 +342,18 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       {
         case 1: player2->setScore(2, player2Choice + 2, -1 * player2Bet); break;
         case 2: player2->setScore(2, player2Choice + 4, -1 * player2Bet); break;
-        default: player2->setScore(2, player2Choice, -1 * player2Bet); break;
+      }
+      if (player2cond1 || player2cond2 || player2cond3)
+      {
+        player2->setScore(2, player2Choice, -1 * player2Bet);
+      }
+      else
+      {
+        player2->setScore(2, player2Choice, player2Bet);
       }
     }
   }
-  else if (player2cond1 || player2cond2 || player2cond3 || player1cond4) //Player 2 wins
+  else if ((player2cond1 || player2cond2 || player2cond3 || player2cond4) && !player1cond4) //Player 2 wins
   {
     player1->setLife(player1->getLife() - player1Bet);
     player2->setLife(player2->getLife() + player2Bet);
@@ -311,7 +363,14 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       {
         case 1: player1->setScore(0, player1Choice + 2, -1 * player1Bet); break;
         case 2: player1->setScore(0, player1Choice + 4, -1 * player1Bet); break;
-        default: player1->setScore(0, player1Choice, -1 * player1Bet); break;
+      }
+      if (player1cond1 || player1cond2 || player1cond3)
+      {
+        player1->setScore(0, player1Choice, -1 * player1Bet);
+      }
+      else
+      {
+        player1->setScore(0, player1Choice, player1Bet);
       }
     }
     else if (updown[4]) //Player 2 at 1 up 1 down
@@ -320,7 +379,14 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       {
         case 1: player1->setScore(1, player1Choice + 2, -1 * player1Bet); break;
         case 2: player1->setScore(1, player1Choice + 4, -1 * player1Bet); break;
-        default: player1->setScore(1, player1Choice, -1 * player1Bet); break;
+      }
+      if (player1cond1 || player1cond2 || player1cond3)
+      {
+        player1->setScore(1, player1Choice, -1 * player1Bet);
+      }
+      else
+      {
+        player1->setScore(1, player1Choice, player1Bet);
       }
     }
     else if (updown[5]) //Player 2 at 2 down
@@ -329,7 +395,14 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       {
         case 1: player1->setScore(2, player1Choice + 2, -1 * player1Bet); break;
         case 2: player1->setScore(2, player1Choice + 4, -1 * player1Bet); break;
-        default: player1->setScore(2, player1Choice, -1 * player1Bet); break;
+      }
+      if (player1cond1 || player1cond2 || player1cond3)
+      {
+        player1->setScore(2, player1Choice, -1 * player1Bet);
+      }
+      else
+      {
+        player1->setScore(2, player1Choice, player1Bet);
       }
     }
     if (updown[0]) //Player 1 at 2 up
@@ -337,8 +410,15 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       switch(player2Raise)
       {
         case 1: player2->setScore(0, player2Choice + 2, player2Bet); break;
-        case 2: player2->setScore(0, player2Choice + 4, player2Bet); break;
-        default: player2->setScore(0, player2Choice, player2Bet); break;
+        case 0: player2->setScore(0, player2Choice, player2Bet); break;
+      }
+      if (player1cond1 || player1cond2 || player1cond3)
+      {
+        player2->setScore(0, player2Choice + 4, -1 * player2Bet);
+      }
+      else
+      {
+        player2->setScore(0, player2Choice + 4, player2Bet);
       }
     }
     else if (updown[1]) //Player 1 at 1 up 1 down
@@ -346,8 +426,15 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       switch(player2Raise)
       {
         case 1: player2->setScore(1, player2Choice + 2, player2Bet); break;
-        case 2: player2->setScore(1, player2Choice + 4, player2Bet); break;
-        default: player2->setScore(1, player2Choice, player2Bet); break;
+        case 0: player2->setScore(1, player2Choice, player2Bet); break;
+      }
+      if (player1cond1 || player1cond2 || player1cond3)
+      {
+        player2->setScore(1, player2Choice + 4, -1 * player2Bet);
+      }
+      else
+      {
+        player2->setScore(1, player2Choice + 4, player2Bet);
       }
     }
     else if (updown[2]) //Player 1 at 2 down
@@ -355,13 +442,18 @@ void playRoundTraining(OPContestant *& player1, OPContestant *& player2, vector<
       switch(player2Raise)
       {
         case 1: player2->setScore(2, player2Choice + 2, player2Bet); break;
-        case 2: player2->setScore(2, player2Choice + 4, player2Bet); break;
-        default: player2->setScore(2, player2Choice, player2Bet); break;
+        case 0: player2->setScore(2, player2Choice, player2Bet); break;
+      }
+      if (player1cond1 || player1cond2 || player1cond3)
+      {
+        player2->setScore(2, player2Choice + 4, -1 * player2Bet);
+      }
+      else
+      {
+        player2->setScore(2, player2Choice + 4, player2Bet);
       }
     }
   }
-
-
 
   //cout << "Player 1 life: " << player1->getLife() << endl; //DEBUG
   //cout << "Player 2 life: " << player2->getLife() << endl; //DEBUG
@@ -468,7 +560,8 @@ void playRound(OPContestant *& player1, OPContestant *& player2, vector<PokerCar
       validInput = isValidInput(player1betInquire);
       cout << endl;
     }
-    player1betInquireInt = atoi(player1Choice.c_str());
+    player1betInquireInt = atoi(player1betInquire.c_str());
+
     validPick = player1betInquireInt == 1 || player1betInquireInt == 2;
     if (!validPick)
     {
@@ -486,244 +579,57 @@ void playRound(OPContestant *& player1, OPContestant *& player2, vector<PokerCar
   //1.1 IF player chose to raise, decide whether to additionally raise or check/fold.
   //1.2 Otherwise, decide whether to raise or check.
   //2. Pick the card to play.
-  int player2choice;
+  int player2choice, maximumChoice;
   bool player2raise = false;
   bool player2fold = false;
   if (updown[0])
   {
     //Player has two up cards.
-    int higherCardFold = player2->getScore(0, 0);
-    int lowerCardFold = player2->getScore(0, 1);
-    int higherCardCheck = player2->getScore(0, 2);
-    int lowerCardCheck = player2->getScore(0, 3);
-    int higherCardRaise = player2->getScore(0, 4);
-    int lowerCardRaise = player2->getScore(0, 5);
-    int foldTotal = higherCardFold + lowerCardFold;
-    int checkTotal = higherCardCheck + lowerCardCheck;
-    int raiseTotal = higherCardRaise + lowerCardRaise;
-    if (!player1raise)
-    {
-      if (checkTotal > raiseTotal)
-      {
-        if (higherCardCheck >= lowerCardCheck)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else
-      {
-        player2raise = true;
-        if (higherCardRaise >= lowerCardRaise)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-    }
-    else
-    {
-      if (foldTotal > raiseTotal && foldTotal > checkTotal)
-      {
-        player2fold = true;
-        if (higherCardFold >= lowerCardFold)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else if (checkTotal > raiseTotal && checkTotal > foldTotal)
-      {
-        if (higherCardCheck >= lowerCardCheck)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else
-      {
-        player2raise = true;
-        if (higherCardRaise >= lowerCardRaise)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-    }
+    //Pick the index with the maximum score.
+    //0 = play 1st card and fold
+    //1 = play 2nd card and fold
+    //2 = play 1st card and check
+    //3 = play 2nd card and check
+    //4 = play 1st card and raise
+    //5 = play 2nd card and raise
+    maximumChoice = player2->getMaxIndex(0, player1raise);
   }
   else if (updown[1])
   {
     //Player has one up card and one down card.
-    int higherCardFold = player2->getScore(1, 0);
-    int lowerCardFold = player2->getScore(1, 1);
-    int higherCardCheck = player2->getScore(1, 2);
-    int lowerCardCheck = player2->getScore(1, 3);
-    int higherCardRaise = player2->getScore(1, 4);
-    int lowerCardRaise = player2->getScore(1, 5);
-    int foldTotal = higherCardFold + lowerCardFold;
-    int checkTotal = higherCardCheck + lowerCardCheck;
-    int raiseTotal = higherCardRaise + lowerCardRaise;
-    if (!player1raise)
-    {
-      if (checkTotal > raiseTotal)
-      {
-        if (higherCardCheck >= lowerCardCheck)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else
-      {
-        player2raise = true;
-        if (higherCardRaise >= lowerCardRaise)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-    }
-    else
-    {
-      if (foldTotal > raiseTotal && foldTotal > checkTotal)
-      {
-        player2fold = true;
-        if (higherCardFold >= lowerCardFold)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else if (checkTotal > raiseTotal && checkTotal > foldTotal)
-      {
-        if (higherCardCheck >= lowerCardCheck)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else
-      {
-        player2raise = true;
-        if (higherCardRaise >= lowerCardRaise)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-    }
+    maximumChoice = player2->getMaxIndex(1, player1raise);
   }
   else //if (updown[2])
   {
     //Player has two down cards.
-    int higherCardFold = player2->getScore(2, 0);
-    int lowerCardFold = player2->getScore(2, 1);
-    int higherCardCheck = player2->getScore(2, 2);
-    int lowerCardCheck = player2->getScore(2, 3);
-    int higherCardRaise = player2->getScore(2, 4);
-    int lowerCardRaise = player2->getScore(2, 5);
-    int foldTotal = higherCardFold + lowerCardFold;
-    int checkTotal = higherCardCheck + lowerCardCheck;
-    int raiseTotal = higherCardRaise + lowerCardRaise;
-    if (!player1raise)
-    {
-      if (checkTotal > raiseTotal)
-      {
-        if (higherCardCheck >= lowerCardCheck)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else
-      {
-        player2raise = true;
-        if (higherCardRaise >= lowerCardRaise)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-    }
-    else
-    {
-      if (foldTotal > raiseTotal && foldTotal > checkTotal)
-      {
-        player2fold = true;
-        if (higherCardFold >= lowerCardFold)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else if (checkTotal > raiseTotal && checkTotal > foldTotal)
-      {
-        if (higherCardCheck >= lowerCardCheck)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-      else
-      {
-        player2raise = true;
-        if (higherCardRaise >= lowerCardRaise)
-        {
-          player2choice = 0;
-        }
-        else
-        {
-          player2choice = 1;
-        }
-      }
-    }
+    maximumChoice = player2->getMaxIndex(2, player1raise);
   }
+
+  player2choice = maximumChoice % 2;
+  if ((maximumChoice / 2) == 2)
+  {
+    player2raise = true;
+  }
+  else if ((maximumChoice / 2) == 0)
+  {
+    player2fold = true;
+  }
+  else if ((maximumChoice / 2) == 1 && player1raise)
+  {
+    player2bet++;
+  }
+
 
   if (player2raise)
   {
-    player2bet++;
+    if (!player1raise)
+    {
+      player2bet++;
+    }
+    else
+    {
+      player2bet += 2;
+    }
     cout << "Computer decided to raise. Would you like to raise the bet even higher, check, or fold?" << endl;
     validPick = false;
     while(!validPick)
@@ -740,8 +646,8 @@ void playRound(OPContestant *& player1, OPContestant *& player2, vector<PokerCar
         validInput = isValidInput(player1betInquire);
         cout << endl;
       }
-      player1betInquireInt = atoi(player1Choice.c_str());
-      validPick = player1betInquireInt == 1 || player1betInquireInt == 2 || player1betInquireInt == 3;
+      player1betInquireInt = atoi(player1betInquire.c_str());
+      validPick = player1betInquireInt == 1 || player1betInquireInt == 2 || player1betInquireInt == 0;
       if (!validPick)
       {
         cout << "Please choose between fold (type 0), check (type 1), or raise (type 2)." << endl;
@@ -752,6 +658,11 @@ void playRound(OPContestant *& player1, OPContestant *& player2, vector<PokerCar
         player1bet += 2;
         player2bet++;
         cout << "You challenged the computer by upping the ante!" << endl;
+      }
+      else if (player1betInquireInt == 1)
+      {
+        player1bet++;
+        cout << "You accepted the raise." << endl;
       }
       else if (player1betInquireInt == 0)
       {
@@ -795,7 +706,7 @@ void playRound(OPContestant *& player1, OPContestant *& player2, vector<PokerCar
   //cout << "player2 cond1: " << player2cond1 << ", cond2: " << player2cond2 << ", cond3: " << player2cond3 << endl; //DEBUG
 
   //Whoever wins claims one life from the opponent. Draws do not affect anything.
-  if (player1cond1 || player1cond2 || player1cond3 || player2fold) //Player 1 wins
+  if ((player1cond1 || player1cond2 || player1cond3 || player2fold) && !player1fold) //Player 1 wins
   {
     player1->setLife(player1->getLife() + player2bet);
     player2->setLife(player2->getLife() - player2bet);
@@ -805,7 +716,7 @@ void playRound(OPContestant *& player1, OPContestant *& player2, vector<PokerCar
       default: cout << "You win " << player2bet << " lives." << endl; break;
     }
   }
-  else if (player2cond1 || player2cond2 || player2cond3 || player1fold) //Player 2 wins
+  else if ((player2cond1 || player2cond2 || player2cond3 || player1fold) && !player2fold) //Player 2 wins
   {
     player1->setLife(player1->getLife() - player1bet);
     player2->setLife(player2->getLife() + player1bet);
@@ -954,33 +865,16 @@ int main(int argc, char * argv[])
     deck.pop_back();
     com2->addCard(deck.back());
     deck.pop_back();
-    //int count = 4; //DEBUG LINE!!!
-    /*int ccc = 1;
-    for (PokerCards * p : deck)
-    {
-      cout << ccc << ": " << p->to_string() << ", ";
-      ccc++;
-    }
-    cout << endl;*/
-    while (com1->getLife() != 0 && com2->getLife() != 0) //&& count > 0) //DEBUG
+
+    while (com1->getLife() != 0 && com2->getLife() != 0)
     {
       playRoundTraining(com1, com2, deck);
-
-      /*int ccc = 1;
-      for (PokerCards * p : deck)
-      {
-        cout << ccc << ": " << p->to_string() << ", ";
-        ccc++;
-      }
-      cout << endl;*/
 
       //If all cards have been consumed, regenerate a randomly shuffled deck
       if (deck.empty())
       {
         generateShuffledDeck(deck);
       }
-      //cout << "trainingCount: " << trainingCount << endl; //DEBUG
-      //count--; //DEBUG
     }
     com1->resetHand(DEFAULT_LIFE_COUNT);
     com2->resetHand(DEFAULT_LIFE_COUNT);
@@ -997,10 +891,10 @@ int main(int argc, char * argv[])
   com1->printEverything();
   cout << "com2 results:" << endl;
   com2->printEverything();*/
-
+  //cout << "" << endl;
   com1->combine(com2, opponentlife);
   com2->resetComplete();
-  //cout << "com1 results:" << endl;
+  //cout << "com1 results after combination:" << endl; //DEBUG
   //com1->printEverything();
 
   generateShuffledDeck(deck);
@@ -1014,9 +908,9 @@ int main(int argc, char * argv[])
   deck.pop_back();
 
   string blank; //Dummy variable used for the "press enter key to continue."
-  while (com1->getLife() != 0 && player->getLife() != 0)
+  while (com1->getLife() > 0 && player->getLife() > 0)
   {
-    playRound(com1, player, deck);
+    playRound(player, com1, deck);
 
     cout << "Press the enter key to continue.";
     getline(cin, blank);
@@ -1029,7 +923,7 @@ int main(int argc, char * argv[])
     }
   }
 
-  if (com1->getLife() == 0)
+  if (com1->getLife() <= 0)
   {
     cout << "You win!" << endl;
   }
