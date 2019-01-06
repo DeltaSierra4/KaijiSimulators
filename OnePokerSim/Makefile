@@ -1,20 +1,20 @@
-# Makefile for files used in the LimitedRPS executable
-# Requires clang++ 6.0 or above to run
+# Makefile for files used in the OnePokerSim executable.
+# Requires clang++ 6.0 or above to run.
 #
-# make Contestant: compiles and creates Contestant.o
-# make all:				 compiles and creates LimitedRPS executable
+# make OPContestant: compiles and creates OPContestant.o
+# make all:				   compiles and creates OnePokerSim executable
 #
-# Written by Vincent Yang, 2018/11/23
+# Written by Vincent Yang, 2018/12/30
 
-EXE = LimitedRPS
+EXE = OnePokerSim
 OBJS_DIR = .objs
-OBJS_ALL = LimitedRPS.o Contestant.o
+OBJS_ALL = OnePokerSim.o OPContestant.o PokerCards.o
 WARNINGS = -pedantic -Wall -Werror -Wfatal-errors -Wextra -Wno-unused-parameter -Wno-unused-variable
 
 CXX = clang++
-CXXFLAGS = -std=c++1y -stdlib=libc++ -g -O0 $(WARNINGS) -MMD -MP -c
+CXXFLAGS = -std=c++1y -stdlib=libstdc++ -g -O0 $(WARNINGS) -MMD -MP -c
 LD = clang++
-LDFLAGS = -std=c++1y -stdlib=libc++ -lc++abi -lpthread
+LDFLAGS = -std=c++1y -stdlib=libstdc++ -lpthread #-lc++abi
 
 all: $(EXE)
 
@@ -36,11 +36,8 @@ $(EXE):      $(patsubst %.o, $(OBJS_DIR)/%.o,      $(OBJS_ALL)) #$(patsubst %.o,
 # Include automatically generated dependencies
 -include $(OBJS_DIR)/*.d
 
-LimitedRPS.o: LimitedRPS.cpp
-		$(CXX) $(CXXFLAGS) LimitedRPS.cpp
-
-Contestant.o: Contestant.cpp Contestant.h
-		$(CXX) $(CXXFLAGS) Contestant.cpp
+OPContestant.o: OPContestant.cpp OPContestant.h
+		$(CXX) $(CXXFLAGS) OPContestant.cpp
 
 clean:
 		rm -rf $(EXE) $(EXE)-asan $(OBJS_DIR) test tests/*.d tests/*.o
