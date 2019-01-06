@@ -24,6 +24,10 @@
  * deck. If the remaining deck is completely consumed, the used cards are
  * reshuffled and used again.
  *
+ * In addition to choosing what card to play, the player can also decide if
+ * they want to increase the bet by raising the bet by one more life. The
+ * opponent can decide to fold, accept the raise, or bet an even higher amount.
+ *
  * The number of starting lives for each player depends on how much money
  * each player starts with. In this program, the number of lives can be set
  * by the client by optional command line arguments. The game is over when one
@@ -36,9 +40,9 @@
  * setting = 2 for custom settings: Client can choose life count for each
  * player
  * If no arguments are used, game will proceed with default settings
- * of 6:6 life count
+ * of 10:10 life count
  *
- * Written by Vincent Yang 1/5/2019
+ * Written by Vincent Yang 1/6/2019
  * This is a work in progress!
  */
 
