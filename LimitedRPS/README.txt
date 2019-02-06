@@ -1,5 +1,5 @@
 Kaiji Simulator Vol. 1 - Limited Rock-Paper-Scissors
-Written by DeltaSierra4 (Vincent Yang) 11/25/2018
+Written by DeltaSierra4 (Vincent Yang) 2/5/2018
 
 
 I. Introduction
@@ -33,7 +33,11 @@ Typing in invalid parameters (e.g. any non-numeric characters or having more rep
 
 III. Release Notes
 
-1.0.0. Notes
+1.1.0. Notes - 2/5/2018
+-Updated argument processing: Now client can pass in optional arguments in any order as long as they provide which argument they are providing (e.g. "-c" for contestant count, "-t" for turn limit)
+-Minor fix to the Makefile
+
+1.0.0. Notes - 11/25/2018
 - Implemented general simulator: Client can set number of contestants, number of repeaters (see Introduction), and turn limits if they wish.
 - Can set number of repeaters participating in the game.
 

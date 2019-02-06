@@ -1,5 +1,5 @@
 /*
- * class OnePokerSim
+ * class OnePokerSim ver 1.1.0
  *
  * Main executable of the One Poker Simulator program. Simulates a game of
  * 'One Poker' that is featured in Season 4 of the Japanese Manga 'Kaiji'.
@@ -34,7 +34,7 @@
  * player runs out of lives.
  *
  * How to run it:
- *    ./OnePokerSim <setting> <player's life count> <opponent's life count>
+ *    ./OnePokerSim [-s <setting>] [-pl <player's life count>] [-ol <opponent's life count>]
  * setting = 1 for 'Kaiji setting': player starts with 2 lives and computer
  * starts with 10 lives
  * setting = 2 for custom settings: Client can choose life count for each
@@ -42,6 +42,7 @@
  * If no arguments are used, game will proceed with default settings
  * of 10:10 life count
  *
+ * Updated by Vincent Yang 2/5/2019
  * Written by Vincent Yang 1/6/2019
  * This is a work in progress!
  */
@@ -62,6 +63,31 @@
 #define KAIJI_LIFE_COUNT_COMPUTER 10
 
 using namespace std;
+
+int setting = 0;
+bool settingsset = false;
+bool playerlifeset = false;
+bool opponentlifeset = false;
+
+
+/*
+ * Helper method that is called when user tries to run the program
+ * with malformed inputs or invalid arguments. Prints instruction on how to
+ * run this program (with optional parameters) and exits the program.
+ */
+void usage()
+{
+  if (settingsset || playerlifeset || opponentlifeset)
+  {
+    cout << "You have attempted to set the same argument twice." << endl;
+    cout << "" << endl;
+  }
+  cout << "+++Usage of this program+++" << endl;
+  cout << "Type the following on the commmand line prompt: ./OnePokerSim [-s <setting>] [-pl <player's life count>] [-ol <opponent's life count>]" << endl;
+  cout << "setting = 1 for 'Kaiji setting': player starts with 2 lives and computer starts with 10 lives." << endl;
+  cout << "setting = 2 for custom settings: Client can choose life count for each player." << endl;
+  exit(-1);
+}
 
 /*
  * Helper method that checks if user input a valid integer.
@@ -804,54 +830,102 @@ int main(int argc, char * argv[])
   //command line arguments.
   OPContestant * player;
 
-  // variable that will be used to store the opponent's life count.
-  int opponentlife;
+  // variables that will be used to store each player's life count.
+  int opponentlife = 0;
+  int playerLife = 0;
 
-  for (int argi = 1 ; argi < argc ; argi++)
+  if (argc > 1)
   {
-    if (!isValidInput(argv[argi]))
+    if (argc % 2 == 0 || argc > 7)
     {
-      printErrorMsg(1, 0);
-      return 0;
+      //Program cannot run if argument count (including program name) is even!
+      //It won't run if you provide more than 7 arguments either.
+      usage();
+    }
+    for (int argi = 1 ; argi < argc ; argi += 2) //Check every other argument for optional parameters
+    {
+      if (*argv[argi] == '-') //optional params always start with '-', as shown in usage()
+      {
+        if (strcmp(argv[argi], "-s") == 0)
+        {
+          if (!isValidInput(argv[argi+1]) || settingsset)
+          {
+            usage();
+          }
+          setting = atoi(argv[argi+1]);
+          settingsset = true;
+        }
+        else if (strcmp(argv[argi], "-pl")  == 0)
+        {
+          if (!isValidInput(argv[argi+1]) || playerlifeset)
+          {
+            usage();
+          }
+          playerLife = atoi(argv[argi+1]);
+          playerlifeset = true;
+        }
+        else if (strcmp(argv[argi], "-ol") == 0)
+        {
+          if (!isValidInput(argv[argi+1]) || opponentlifeset)
+          {
+            usage();
+          }
+          opponentlife = atoi(argv[argi+1]);
+          opponentlifeset = true;
+        }
+        else
+        {
+          usage();
+        }
+      }
+      else
+      {
+        usage();
+      }
     }
   }
 
-  //At this point, all input is guaranteed to be numerical values
-  if (argc == 4 || (argc == 2 && atoi(argv[1]) == 1))
-  {
-    int setting = atoi(argv[1]);
-    if (setting == 1) //Kaiji settings
-    {
-      player = new OPContestant(KAIJI_LIFE_COUNT_PLAYER);
-      opponentlife = KAIJI_LIFE_COUNT_COMPUTER;
-    }
-    else if (setting == 2) //Custom settings
-    {
-      player = new OPContestant(atoi(argv[2]));
-      opponentlife = atoi(argv[3]);
-    }
-    else //Invalid input
-    {
-      printErrorMsg(4, 0);
-      return 0;
-    }
-  }
-  else if (argc == 1) //No optional arguments used. Proceed with default settings.
+  if (argc == 1) //No optional arguments used. Proceed with default settings.
   {
     player = new OPContestant();
     opponentlife = DEFAULT_LIFE_COUNT;
   }
-  else if (argc == 2 || argc == 3) //fewer arguments detected. Display warning and close program
+  else if (setting == 1) //Kaiji settings
   {
-    printErrorMsg(3, argc);
-    return 0;
+    if (opponentlifeset || playerlifeset)
+    {
+      cout << "Optional parameters will not be used for 'Kaiji settings'." << endl;
+    }
+    player = new OPContestant(KAIJI_LIFE_COUNT_PLAYER);
+    opponentlife = KAIJI_LIFE_COUNT_COMPUTER;
   }
-  else //too many arguments detected. Display warning and close program
+  else if (setting == 2) //Custom settings
   {
-    printErrorMsg(2, argc);
-    return 0;
+    if (!opponentlifeset && !playerlifeset)
+    {
+      cout << "No optional parameters given under setting 2. Proceeding with default settings." << endl;
+      player = new OPContestant();
+      opponentlife = DEFAULT_LIFE_COUNT;
+    }
+    else
+    {
+      player = new OPContestant(playerLife);
+    }
   }
-
+  else if (setting != 2 && (opponentlifeset || playerlifeset))
+  {
+    cout << "In order to use optional parameters. Please run the program with '-s 2'." << endl;
+    opponentlifeset = false; //To silence the extra error message in usage().
+    playerlifeset = false; //To silence the extra error message in usage().
+    usage();
+    return (-1);
+  }
+  else
+  {
+    //Print error message and exit program
+    //At this point client has likely provided invalid setting numbers
+    usage();
+  }
 
 
   int trainingCount = 100000; //Number of training runs for the reinforced machine learning

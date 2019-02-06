@@ -1,18 +1,3 @@
-
-#include "Contestant.h"
-#include <algorithm>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <string.h>
-#include <vector>
-
-#define DEFAULT_CONTESTANT_COUNT 300
-#define DEFAULT_TURN_LIMIT 0
-#define DEFAULT_REPEATERS 0
-
-using namespace std;
-
 /*
  * class LimitedRPS
  *
@@ -32,12 +17,31 @@ using namespace std;
  * until everyone has used up their cards.
  *
  * How to run it:
- *    ./LimitedRPS [number of contestants] [number of repeaters] [turn limit]
+ *    ./LimitedRPS [-c <number of contestants>] [-r <number of repeaters>] [-t <turn limit>]
  * If no optional arguments are given, the number of contestants is set to 300,
  * there are no repeaters, and the turn limit is set to 0 (i.e. unlimited turns
- * until there are no contestants remaining in the general pool).
+ * until there are no contestants remaining in the general pool). Ordering of
+ * the arguments do not matter.
  */
 
+
+#include "Contestant.h"
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <string.h>
+#include <vector>
+
+#define DEFAULT_CONTESTANT_COUNT 300
+#define DEFAULT_TURN_LIMIT 0
+#define DEFAULT_REPEATERS 0
+
+using namespace std;
+
+bool contestantset = false;
+bool repeatersset = false;
+bool turnlimitset = false;
 
 /*
  * Helper method that checks if user input a valid integer.
@@ -248,6 +252,23 @@ void printResult(int & loserCount, int & winnerCount, int & turn, int mostStar)
   cout << "Most number of stars held by contestant: " << mostStar << endl;
 }
 
+/*
+ * Helper method that is called when user tries to run the program
+ * with malformed inputs or invalid arguments. Prints instruction on how to
+ * run this program (with optional parameters) and exits the program.
+ */
+
+void usage()
+{
+  if (repeatersset || contestantset || turnlimitset)
+  {
+    cout << "You have attempted to set the same argument twice." << endl;
+    cout << "" << endl;
+  }
+  cout << "+++Usage of this program+++" << endl;
+  cout << "Type the following on the commmand line prompt: ./LimitedRPS [-c <number of contestants>] [-r <number of repeaters>] [-t <turn limit>]" << endl;
+  exit(-1);
+}
 
 /*
  * Main method. See class comments for instructions on
@@ -267,32 +288,59 @@ int main(int argc, char * argv[])
 
   if (argc > 1)
   {
-    for (int argi = 1 ; argi < argc ; argi++)
+    if (argc % 2 == 0 || argc > 7)
     {
-      if (!isValidInput(argv[argi]))
-      {
-        cout << "Invalid input detected. Type in valid integers to pass in as parameters." << endl;
-        cout << "Command line optional argument format: " << endl;
-        cout << "./LimitedRPS <number of contestants> <number of repeaters> <turn limit>" << endl;
-        return 0;
-      }
+      //Program cannot run if argument count (including program name) is even!
+      //It won't run if you provide more than 7 arguments either.
+      usage();
     }
-    contestantCount = atoi(argv[1]);
-    if (argc > 2)
+    for (int argi = 1 ; argi < argc ; argi += 2) //Check every other argument for optional parameters
     {
-      repeaters = atoi(argv[2]);
-      if (repeaters > contestantCount)
+      if (*argv[argi] == '-') //optional params always start with '-', as shown in usage()
       {
-        cout << "You cannot have more repeaters than contestants." << endl;
-        return 0;
+        if (strcmp(argv[argi], "-c") == 0)
+        {
+          if (!isValidInput(argv[argi+1]) || contestantset)
+          {
+            usage();
+          }
+          contestantCount = atoi(argv[argi+1]);
+          contestantset = true;
+        }
+        else if (strcmp(argv[argi], "-r")  == 0)
+        {
+          if (!isValidInput(argv[argi+1]) || repeatersset)
+          {
+            usage();
+          }
+          repeaters = atoi(argv[argi+1]);
+          repeatersset = true;
+        }
+        else if (strcmp(argv[argi], "-t") == 0)
+        {
+          if (!isValidInput(argv[argi+1]) || turnlimitset)
+          {
+            usage();
+          }
+          turnLimit = atoi(argv[argi+1]);
+          turnlimitset = true;
+        }
+        else
+        {
+          usage();
+        }
       }
-      if (argc > 2)
+      else
       {
-        turnLimit = atoi(argv[3]);
+        usage();
       }
     }
   }
-
+  if (repeaters > contestantCount)
+  {
+    cout << "You cannot have more repeaters than contestants!" << endl;
+    return(-1);
+  }
   if (turnLimit == 0)
   {
     //The while loop below ends when turnLimit hits 0.

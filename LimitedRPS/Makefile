@@ -43,4 +43,4 @@ Contestant.o: Contestant.cpp Contestant.h
 		$(CXX) $(CXXFLAGS) Contestant.cpp
 
 clean:
-		rm -rf $(EXE) $(EXE)-asan $(OBJS_DIR) test tests/*.d tests/*.o
+		rm -rf $(EXE) $(EXE)-asan $(OBJS_DIR) test tests/*.d tests/*.o *.d
