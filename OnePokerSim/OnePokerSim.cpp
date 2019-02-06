@@ -903,12 +903,25 @@ int main(int argc, char * argv[])
   {
     if (!opponentlifeset && !playerlifeset)
     {
+      //Client passed -s 2 but didn't provide any parameters for life counts for either player
       cout << "No optional parameters given under setting 2. Proceeding with default settings." << endl;
       player = new OPContestant();
       opponentlife = DEFAULT_LIFE_COUNT;
     }
+    else if (!opponentlifeset && playerlifeset)
+    {
+      //Optional life count set for player but not for opponent. Proceed with default life count for opponent.
+      player = new OPContestant(playerLife);
+      opponentlife = DEFAULT_LIFE_COUNT;
+    }
+    else if (opponentlifeset && !playerlifeset)
+    {
+      //Optional life count set for opponent but not for player. Proceed with default life count for player.
+      player = new OPContestant();
+    }
     else
     {
+      //Optional life count set for both player and opponent.
       player = new OPContestant(playerLife);
     }
   }

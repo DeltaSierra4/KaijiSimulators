@@ -1,5 +1,5 @@
 Kaiji Simulator Vol. 1 - Limited Rock-Paper-Scissors
-Written by DeltaSierra4 (Vincent Yang) 2/5/2018
+Written by DeltaSierra4 (Vincent Yang) 2/5/2019
 
 
 I. Introduction
@@ -13,7 +13,7 @@ iii. The time limit (or turn limit) is over and the contestant has any number of
 
 A contestant is sent to a lounge for winners when they have 3 or more stars (4 or more stars for repeaters) and they have no cards left.
 
-Repeaters are returning players who have played the game once and are playing again. 
+Repeaters are returning players who have played the game once and are playing again.
 
 
 II. How to run the simulator
@@ -26,14 +26,15 @@ Type 'make' on a Linux command line from the directory that contains the files t
 ii. Run the program
 Type ./LimitedRPS to run the executable under default settings (300 contestants, no repeaters, no turn limit)
 
-You can also pass in optional parameters to run the simulation under different settings. To pass in parameters, type ./LimitedRPS <number of contestants> <number of repeaters> <turn limit>
+You can also pass in optional parameters to run the simulation under different settings. To pass in parameters, type ./LimitedRPS [-c <number of contestants>] [-r <number of repeaters>] [-t <turn limit>]
 
-Typing in invalid parameters (e.g. any non-numeric characters or having more repeaters than contestants) will not run the program.
+Ordering of the parameters does not matter. Typing in invalid parameters (e.g. any non-numeric characters for number of contestants, having more repeaters than contestants, or passing the same argument type twice) will not run the program.
+
 
 
 III. Release Notes
 
-1.1.0. Notes - 2/5/2018
+1.1.0. Notes - 2/5/2019
 -Updated argument processing: Now client can pass in optional arguments in any order as long as they provide which argument they are providing (e.g. "-c" for contestant count, "-t" for turn limit)
 -Minor fix to the Makefile
 
